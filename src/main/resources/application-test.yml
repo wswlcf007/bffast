@@ -1,0 +1,117 @@
+server:
+  port: 8805
+  tomcat:
+    connection-timeout: 5000ms
+    max-threads: 500
+  servlet:
+    context-path: /fast
+spring:
+  messages:
+    basename: i18n/messages
+    encoding: UTF-8
+    cache-duration: 3600
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://192.168.0.75:3306/bffast?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+      #      url: jdbc:mysql://192.168.0.12:3306/job?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+      username: root
+      password: ENC(zQjDO4vLOR25VFsOZZLoryJKNyWz9Wig)
+      #      password: ENC(2c6F7DItNdlV3Sfv4TBRWMMNYJ6lazMK)
+      initial-size: 10
+      max-active: 100
+      min-idle: 10
+      max-wait: 60000
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      #Oracle需要打开注释
+      #validation-query: SELECT 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        #login-username: admin
+        #login-password: admin
+      filter:
+        stat:
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: false
+        wall:
+          config:
+            multi-statement-allow: true
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+      enabled: true
+  #  redis配置
+  redis:
+    database: 9
+    host: 192.168.0.75
+    port: 6379
+    password: ENC(bBgSsoDaVWDIUw0UuS5X6xTw3T91SbTO)  # 密码（默认为空）
+    timeout: 5000ms  # 连接超时时长（毫秒）
+    jedis:
+      pool:
+        max-active: 100  # 连接池最大连接数（使用负值表示没有限制）
+        max-wait: -1ms      # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-idle: 10      # 连接池中的最大空闲连接
+        min-idle: 5       # 连接池中的最小空闲连接
+    lettuce:
+      pool:
+        max-active: 100  # 连接池最大连接数（使用负值表示没有限制）
+        max-wait: -1ms      # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-idle: 10      # 连接池中的最大空闲连接
+        min-idle: 5       # 连接池中的最小空闲连接
+  rabbitmq:
+    host: 192.168.0.75
+    virtual-host: test
+    port: 5672
+    username: test
+    password: test
+    # ----------------消费者端配置----------------
+    listener:
+      simple:
+        # 消费者端手动确认机制
+        acknowledge-mode: AUTO
+        # 消费者数量
+        concurrency:
+        # 最大消费者数量
+        max-concurrency:
+        # 消费者每次从队列中获取消息的数量
+        prefetch: 10
+#ftp文件上传配置
+file:
+  # 0-ftp 1-本地
+  method: 0
+  rootPath: /test
+  httpPath: http://192.168.0.75:8011
+  ftp:
+    url: 192.168.0.75
+    port: 21
+    username: test
+    password: ENC(HcilUULS3LTk3xMiV9nkQHdf3d+e1nmr)
+    passiveMode: true
+######################### 自定义配置 #########################
+zw:
+  pool:
+    corePoolSize: 3 #设置核心线程数
+    maxPoolSize: 20  #设置最大线程数
+    keepAliveSeconds: 300 #设置线程活跃时间（秒）
+    queueCapacity: 50 #设置队列容量
+netty:
+  port: 8806
+  idle:
+    reader: 60 #单位秒
+    writer: 10
+    all: 60
+#数据源类型 mysql/oracle/sqlserver/postgresql
+div:
+  database:
+    type: mysql

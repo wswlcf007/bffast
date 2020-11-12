@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lcf.fast.module.sys.dao.SysUserSocialDao">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.lcf.fast.module.sys.model.entity.SysUserSocialEntity" id="sysUserSocialMap">
+        <result column="user_id" property="userId"/>
+        <result column="provider_id" property="providerId"/>
+        <result column="provider_user_id" property="providerUserId"/>
+        <result column="rank" property="rank"/>
+        <result column="display_name" property="displayName"/>
+        <result column="profile_url" property="profileUrl"/>
+        <result column="image_url" property="imageUrl"/>
+        <result column="access_token" property="accessToken"/>
+        <result column="secret" property="secret"/>
+        <result column="refresh_token" property="refreshToken"/>
+        <result column="expire_time" property="expireTime"/>
+        <result column="eqp_number" property="eqpNumber"/>
+    </resultMap>
+    <select id="getSocialPage" parameterType="map" resultType="com.lcf.fast.module.sys.model.dto.SysUserSocialDTO">
+        select
+        su.user_id as 'userId',
+        su.image_url as 'imageUrl',
+        su.name as 'name',
+        su.phone as 'mobile',
+        su.username as 'username',
+        su.last_time as 'lastTime' ,
+        su.create_time as 'createTime',
+        su.lock_flag as 'lockFlag',
+        sus.provider_id as 'type',
+        sus.eqp_number as 'eqpNumber'
+        from sys_user_social as sus
+        left join sys_user as su
+        on sus.user_id=su.user_id
+        <where>
+            <if test="params.username!=null and params.username!=''">
+                sus.provider_user_id=#{params.username}
+            </if>
+            <if test="params.mobile!=null and params.mobile!=''">
+                and su.phone=#{params.mobile}
+            </if>
+            <if test="params.eqpNumber!=null and params.eqpNumber!=''">
+                and sus.eqp_number=#{params.eqpNumber}
+            </if>
+            <if test="params.type!=null and params.type!=''">
+                and sus.provider_id=#{params.type}
+            </if>
+            <if test="params.startTime!=null and params.startTime!='' and params.endTime!=null and params.endTime!=''">
+                and su.create_time between #{params.startTime} and #{params.endTime}
+            </if>
+        </where>
+    </select>
+
+</mapper>

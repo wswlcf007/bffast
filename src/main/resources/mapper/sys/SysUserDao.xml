@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lcf.fast.module.sys.dao.SysUserDao">
+
+    <!--自定义分页查询-->
+    <select id="selectAllPageList" parameterType="map"
+            resultType="com.lcf.fast.module.sys.model.vo.SysUserVO">
+        select su.user_id,su.username,su.name,su.phone,su.dept_id,
+        sr.role_id,sr.role_code,sr.role_name,su.create_user_id,su.create_time,
+        su.update_time,su.lock_flag,su.del_flag,su.image_url,su.last_time,
+        sua.map_x, sua.map_y, sua.area_map, sua.link_man, pp.project_name,
+        (case when tb1.projectNum is null then 0 else tb1.projectNum end) as projectNum
+        from sys_user su
+        left join sys_user_role sur on sur.user_id = su.user_id
+        left join sys_role sr on sr.role_id = sur.role_id
+        left join sys_user_agent sua on sua.id = su.user_id
+        left join (select pp.agent_id, count(*) as projectNum from project_project pp group by pp.agent_id) tb1 on tb1.agent_id = sua.id
+        left join sys_user_project sup on sup.user_id = su.user_id
+        left join project_project pp on pp.id = sup.project_id
+        <where>
+            su.del_flag = '0' and sr.role_code != 'phone_user' and sr.role_code != 'social_user'
+            <if test="params.username!=null and params.username!=''">
+                and su.username like concat('%/',#{params.username},'%') ESCAPE '/'
+            </if>
+            <if test="params.name!=null and params.name!=''">
+                and su.name like concat('%/',#{params.name},'%') ESCAPE '/'
+            </if>
+            <if test="params.phone!=null and params.phone!=''">
+                and su.phone like concat('%/',#{params.phone},'%') ESCAPE '/'
+            </if>
+            <if test="params.roleId!=null and params.roleId!=''">
+                and sr.role_id = #{params.roleId}
+            </if>
+            <if test="params.startTime!=null and params.startTime!='' and params.endTime!=null and params.endTime!=''">
+                and su.create_time between #{params.startTime} and #{params.endTime}
+            </if>
+            <if test="params.userIds!=null and params.userIds.size > 0">
+                and su.user_id in
+                <foreach collection="params.userIds" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        order by su.create_time desc
+    </select>
+
+    <!--代理商查询项目管理员-->
+    <select id="selectPageList4Agent" parameterType="map"
+            resultType="com.lcf.fast.module.sys.model.vo.SysUserVO">
+        select su.user_id,su.username,su.name,su.phone,su.dept_id,
+        sr.role_id,sr.role_code,sr.role_name,su.create_user_id,su.create_time,
+        su.update_time,su.lock_flag,su.del_flag,su.image_url,su.last_time,pp.project_name
+        from sys_user_project sup
+        left join sys_user_agent_project suap on sup.project_id = suap.project_id
+        left join sys_user su on su.user_id = sup.user_id
+        left join sys_user_role sur on sur.user_id = su.user_id
+        left join sys_role sr on sr.role_id = sur.role_id
+        left join project_project pp on pp.id = sup.project_id
+        <where>
+            su.del_flag = '0' and sr.role_code='project_admin' and suap.agent_id = #{params.userId}
+            <if test="params.username!=null and params.username!=''">
+                and su.username like concat('%/',#{params.username},'%') ESCAPE '/'
+            </if>
+            <if test="params.name!=null and params.name!=''">
+                and su.name like concat('%/',#{params.name},'%') ESCAPE '/'
+            </if>
+            <if test="params.phone!=null and params.phone!=''">
+                and su.phone like concat('%/',#{params.phone},'%') ESCAPE '/'
+            </if>
+            <if test="params.roleId!=null and params.roleId!=''">
+                and sr.role_id = #{params.roleId}
+            </if>
+            <if test="params.startTime!=null and params.startTime!='' and params.endTime!=null and params.endTime!=''">
+                and su.create_time between #{params.startTime} and #{params.endTime}
+            </if>
+            <if test="params.userIds!=null and params.userIds.size > 0">
+                and su.user_id in
+                <foreach collection="params.userIds" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        order by su.create_time desc
+    </select>
+
+    <!--项目管理员查询所有项目账户-->
+    <select id="selectPageList4ProjectAdmin" parameterType="map"
+            resultType="com.lcf.fast.module.sys.model.vo.SysUserVO">
+        select su.user_id,su.username,su.name,su.phone,su.dept_id,
+        sr.role_id,sr.role_code,sr.role_name,su.create_user_id,su.create_time,
+        su.update_time,su.lock_flag,su.del_flag,su.image_url,su.last_time,pp.project_name
+        from sys_user_project sup
+        left join sys_user su on su.user_id = sup.user_id
+        left join sys_user_role sur on sur.user_id = su.user_id
+        left join sys_role sr on sr.role_id = sur.role_id
+        left join project_project pp on pp.id = sup.project_id
+        <where>
+            su.del_flag = '0' and sr.role_code = 'project_user'
+            and sup.project_id = (select sup.project_id from sys_user_project sup where sup.user_id = #{params.userId})
+            <if test="params.username!=null and params.username!=''">
+                and su.username like concat('%/',#{params.username},'%') ESCAPE '/'
+            </if>
+            <if test="params.name!=null and params.name!=''">
+                and su.name like concat('%/',#{params.name},'%') ESCAPE '/'
+            </if>
+            <if test="params.phone!=null and params.phone!=''">
+                and su.phone like concat('%/',#{params.phone},'%') ESCAPE '/'
+            </if>
+            <if test="params.roleId!=null and params.roleId!=''">
+                and sr.role_id = #{params.roleId}
+            </if>
+            <if test="params.startTime!=null and params.startTime!='' and params.endTime!=null and params.endTime!=''">
+                and su.create_time between #{params.startTime} and #{params.endTime}
+            </if>
+        </where>
+        order by su.create_time desc
+    </select>
+
+    <!--更新用户锁定状态-->
+    <update id="updateUserLockStatus" parameterType="com.lcf.fast.module.sys.model.dto.SysUserLockDTO">
+        update sys_user set lock_flag = #{lockFlag}
+        where user_id =#{id}
+    </update>
+
+    <!--更新用户上次登录时间-->
+    <update id="updateUserLastTime" parameterType="com.lcf.fast.module.sys.model.dto.SysUserLastTimeDTO">
+        update sys_user set last_time = #{lastTime}
+        where user_id =#{id}
+    </update>
+
+    <!-- 查询用户的所有权限 -->
+    <select id="queryAllPerms" resultType="string">
+		select m.permission from sys_user_role ur
+			LEFT JOIN sys_role_menu rm on ur.role_id = rm.role_id 
+			LEFT JOIN sys_menu m on rm.menu_id = m.menu_id 
+		where ur.user_id = #{userId}
+	</select>
+
+    <select id="queryByUserName" resultType="com.lcf.fast.module.sys.model.entity.SysUserEntity">
+		select su.user_id,su.username,su.password,su.salt,su.name,su.phone,su.dept_id,
+        sr.role_id,sr.role_code,sr.client_type,su.create_time,su.update_time,su.lock_flag,su.del_flag,su.image_url,su.last_time
+        from sys_user su
+        left join sys_user_role sur on sur.user_id = su.user_id
+        left join sys_role sr on sr.role_id = sur.role_id
+        where username = #{username}
+	</select>
+
+    <!--单条查询用户信息-->
+    <select id="queryUserById" resultType="com.lcf.fast.module.sys.model.dto.SysUserDTO">
+        select su.user_id,su.username,su.name,su.phone,su.dept_id,
+        su.create_user_id,su.create_time,su.update_time,su.lock_flag,su.del_flag,su.image_url,su.last_time
+        from sys_user su
+        where su.user_id=#{userId}
+    </select>
+
+    <!--单条查询代理商用户信息-->
+    <select id="queryAgentUserById" resultType="com.lcf.fast.module.sys.model.dto.SysUserDTO">
+        select su.user_id,su.username,su.name,su.phone,su.dept_id, tb1.project_num,
+        sua.link_man,sua.area,sua.map_x,sua.map_y,sua.area_map,su.create_user_id,su.create_time,su.update_time,su.lock_flag,su.del_flag,su.image_url,su.last_time
+        from sys_user su
+        left join sys_user_agent sua on sua.id = su.user_id
+        left join (select count(1) as project_num, suap.agent_id from sys_user_agent_project suap group by suap.agent_id) tb1 on tb1.agent_id = sua.id
+        where su.user_id=#{userId}
+    </select>
+
+    <!--单条查询项目用户信息-->
+    <select id="queryProjectUserById" resultType="com.lcf.fast.module.sys.model.dto.SysUserDTO">
+        select su.user_id,su.username,su.name,su.phone,su.dept_id,pp.project_name,sua.agent_name,
+        sup.project_id,suap.agent_id,su.create_user_id,su.create_time,su.update_time,su.lock_flag,su.del_flag,su.image_url,su.last_time
+        from sys_user su
+        left join sys_user_project sup on sup.user_id = su.user_id
+        left join sys_user_agent_project suap on suap.project_id = sup.project_id
+        left join sys_user_agent sua on suap.agent_id = sua.id
+        left join project_project pp on pp.id = sup.project_id
+        where su.user_id=#{userId}
+    </select>
+
+    <!--代理商分页-->
+    <select id="queryAgentPage" parameterType="map" resultType="com.lcf.fast.module.sys.model.vo.SysUserVO">
+        select su.user_id,su.username,su.name,su.phone,su.dept_id,
+        sr.role_id,sr.role_code,sr.role_name,su.create_user_id,su.create_time,
+        su.update_time,su.lock_flag,su.del_flag,su.image_url,su.last_time,
+        sua.map_x, sua.map_y, sua.area_map, sua.link_man, sua.area
+        from sys_user su
+        left join sys_user_role sur on sur.user_id = su.user_id
+        left join sys_role sr on sr.role_id = sur.role_id
+        left join sys_user_agent sua on sua.id = su.user_id
+        <where>
+            su.del_flag = '0'
+            <if test="params.username!=null and params.username!=''">
+                and su.username like concat('%/',#{params.username},'%') ESCAPE '/'
+            </if>
+            <if test="params.name!=null and params.name!=''">
+                and su.name like concat('%/',#{params.name},'%') ESCAPE '/'
+            </if>
+            <if test="params.phone!=null and params.phone!=''">
+                and su.phone like concat('%/',#{params.phone},'%') ESCAPE '/'
+            </if>
+            <if test="params.roleId!=null and params.roleId!=''">
+                and sr.role_id = #{params.roleId}
+            </if>
+            <if test="params.startTime!=null and params.startTime!='' and params.endTime!=null and params.endTime!=''">
+                and su.create_time between #{params.startTime} and #{params.endTime}
+            </if>
+        </where>
+        order by su.create_time desc
+    </select>
+    <select id="querySocialUserById"  parameterType="map" resultType="com.lcf.fast.module.sys.model.dto.SysUserDTO">
+        select su.user_id,su.username,su.name,su.phone,su.dept_id,
+               su.create_user_id,su.create_time,su.update_time,su.lock_flag,su.del_flag,su.image_url,su.last_time
+        from sys_user su
+        left join sys_user_social sus on su.user_id = sus.user_id
+        where su.user_id=#{userId}
+    </select>
+</mapper>

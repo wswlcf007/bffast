@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lcf.fast.module.sys.dao.SysOpenApiLogDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.lcf.fast.module.sys.model.entity.SysOpenApiLogEntity" id="sysOpenApiLogMap">
+        <result property="id" column="id"/>
+        <result property="openKey" column="open_key"/>
+        <result property="apiUrl" column="api_url"/>
+        <result property="requestParams" column="request_params"/>
+        <result property="ipAddress" column="ip_address"/>
+        <result property="isFail" column="is_fail"/>
+        <result property="responseParams" column="response_params"/>
+        <result property="timeDay" column="time_day"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+
+</mapper>

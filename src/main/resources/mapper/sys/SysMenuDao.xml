@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lcf.fast.module.sys.dao.SysMenuDao">
+
+	<select id="queryListParentId" resultType="com.lcf.fast.module.sys.model.entity.SysMenuEntity">
+		select * from sys_menu where parent_id = #{parentId} order by sort asc
+	</select>
+
+	<select id="queryNotButtonList" resultType="com.lcf.fast.module.sys.model.entity.SysMenuEntity">
+		select * from sys_menu where type != 2 order by sort asc
+	</select>
+
+	<!--通过角色查询菜单信息-->
+	<select id="listMenusByRoleId" resultType="com.lcf.fast.module.sys.model.vo.MenuVO">
+		SELECT
+			sys_menu.*
+		FROM
+			sys_menu
+		LEFT JOIN sys_role_menu ON sys_menu.menu_id = sys_role_menu.menu_id
+		WHERE
+			sys_menu.del_flag = 0
+		AND sys_role_menu.role_id = #{roleId}
+		ORDER BY
+			sys_menu.sort DESC
+	</select>
+
+	<!-- 查询用户的所有菜单ID -->
+	<select id="queryAllMenuId" resultType="long">
+		select distinct rm.menu_id from sys_user_role ur
+			LEFT JOIN sys_role_menu rm on ur.role_id = rm.role_id
+		where ur.user_id = #{userId}
+	</select>
+</mapper>

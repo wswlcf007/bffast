@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lcf.fast.module.sys.dao.SysDictTypeDao">
+
+    <resultMap id="sysDictTypeMap" type="com.lcf.fast.module.sys.model.entity.SysDictType">
+        <result property="typeValue" column="type_value"/>
+        <result property="typeName" column="type_name"/>
+    </resultMap>
+</mapper>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lcf.fast.module.sys.dao.SysUserRoleDao">
+
+	<delete id="deleteBatch">
+		delete from sys_user_role where role_id in
+		<foreach item="roleId" collection="array" open="(" separator="," close=")">
+			#{roleId}
+		</foreach>
+	</delete>
+	<!--查询用户角色列表-->
+	<select id="queryRoleIdList" resultType="integer">
+		select role_id from sys_user_role where user_id = #{value}
+	</select>
+
+	<!--查询用户单个角色-->
+	<select id="queryRole" resultType="com.lcf.fast.module.sys.model.entity.SysRoleEntity">
+		select sr.role_id,sr.role_code,sr.role_name,sr.client_type from sys_user_role sur
+		left join sys_role sr on sr.role_id = sur.role_id
+		where sur.user_id = #{value} limit 1
+	</select>
+
+	<!--根据用户Id删除该用户的角色关系-->
+	<delete id="deleteByUserId">
+		DELETE FROM sys_user_role WHERE user_id = #{userId}
+	</delete>
+</mapper>

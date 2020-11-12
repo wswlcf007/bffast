@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lcf.fast.module.sys.dao.SysVersionDao">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.lcf.fast.module.sys.model.entity.SysVersionEntity" id="noticeVersionMap">
+        <result property="id" column="id"/>
+        <result property="versionName" column="version_name"/>
+        <result property="clientType" column="client_type"/>
+        <result property="version" column="version"/>
+        <result property="isCurrent" column="is_current"/>
+        <result property="content" column="content"/>
+        <result property="upgrade" column="upgrade"/>
+        <result property="installUrl" column="install_url"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createUser" column="create_user"/>
+        <result property="createUserName" column="create_user_name"/>
+    </resultMap>
+
+    <!--将当前最新版本更新为历史版本-->
+    <update id="updateCurrent" parameterType="string">
+        update sys_version set is_current = '0' where is_current = '1' and client_type = #{clientType}
+    </update>
+
+    <!--查询最新版本号-->
+    <select id="selectCurrentVersion" parameterType="string" resultType="com.lcf.fast.module.sys.model.entity.SysVersionEntity">
+        select * from sys_version where is_current = '1' and client_type = #{clientType}
+    </select>
+</mapper>

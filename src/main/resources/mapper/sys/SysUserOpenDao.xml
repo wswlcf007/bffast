@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lcf.fast.module.sys.dao.SysUserOpenDao">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.lcf.fast.module.sys.model.entity.SysUserOpenEntity" id="sysUserOpenMap">
+        <result property="id" column="id"/>
+        <result property="openKey" column="open_key"/>
+        <result property="openSecret" column="open_secret"/>
+        <result property="openIp" column="open_ip"/>
+        <result property="companyName" column="company_name"/>
+        <result property="contact" column="contact"/>
+        <result property="contactNumber" column="contact_number"/>
+        <result property="businessMan" column="business_man"/>
+        <result property="isLock" column="is_lock"/>
+        <result property="isDel" column="is_del"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+
+</mapper>
